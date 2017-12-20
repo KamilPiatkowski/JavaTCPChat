@@ -1,6 +1,8 @@
 package client;
 
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
 
@@ -24,10 +26,27 @@ public class Client {
         port = Integer.parseInt(scanner.nextLine());
 
         Socket socket = new Socket(ip, port);
+        System.out.println("Connected.");
+
+        // Receive msg
+        Channel channel = new Channel(socket);
+        channel.start();
+
+        // Send msg
+        while(true) {
+            String msg = scanner.nextLine();
+
+            if(msg.isEmpty()) {
+                break;
+            }
+
+            channel.send(name + ": " + msg);
+        }
 
         scanner.close();
-        socket.close();
+        channel.stop();
 
+        System.out.println("Closed.");
     }
 
 }
